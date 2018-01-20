@@ -12,9 +12,12 @@ class GameViewController: UIViewController, UIImagePickerControllerDelegate,UINa
     
     @IBOutlet var gameImageView: UIImageView!
     
+    @IBOutlet var deleteButton: UIButton!
+    @IBOutlet var addupdate: UIButton!
     @IBOutlet var titleTextField: UITextField!
     
     var imagePicker = UIImagePickerController()
+    var game :Game? = nil
     
     //esconder teclado al tocar la pantalla
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -31,6 +34,17 @@ class GameViewController: UIViewController, UIImagePickerControllerDelegate,UINa
         super.viewDidLoad()
         self.titleTextField.delegate = self
         imagePicker.delegate=self
+        
+        if game != nil {
+            print("have a game")
+            gameImageView.image=UIImage(data:game?.image as Data!)
+            titleTextField.text=game!.title
+            addupdate.setTitle("Add", for: .normal)
+        }else{
+            print("not a game")
+            deleteButton.isHidden=true
+            addupdate.setTitle("Update", for: .normal)
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -56,11 +70,20 @@ class GameViewController: UIViewController, UIImagePickerControllerDelegate,UINa
     }
     
     @IBAction func addTap(_ sender: Any) {
-        let context=(UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         
-        let game=Game(context: context)
-        game.title=titleTextField.text
-        game.image=UIImagePNGRepresentation(gameImageView.image!)
+        if game != nil {
+            //en esta caso game existe en el contexto global ya que se espera recibir desde la vista previa asi que game se le añade la ! para que sepa que el valor no sera opcional 
+            game!.title=titleTextField.text
+            game!.image=UIImagePNGRepresentation(gameImageView.image!)
+        }else {
+            let context=(UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+            
+            let game=Game(context: context)
+            game.title=titleTextField.text
+            game.image=UIImagePNGRepresentation(gameImageView.image!)
+        }
+        
+        
         
         //guardar en la db
         (UIApplication.shared.delegate as! AppDelegate).saveContext()

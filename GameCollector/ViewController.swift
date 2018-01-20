@@ -26,7 +26,6 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
         do {
             games = try context.fetch(Game.fetchRequest())
-            print(games)
             tableView.reloadData() 
         } catch {
     
@@ -44,6 +43,16 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         cell.imageView?.sizeToFit()
         cell.imageView?.image=UIImage(data:game.image as Data!)
         return cell
+    }
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let game=games[indexPath.row]
+        
+        performSegue(withIdentifier: "toadd", sender: game)
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+         let nextVC=segue.destination as! GameViewController
+        nextVC.game=sender as? Game
     }
     
     override func didReceiveMemoryWarning() {
