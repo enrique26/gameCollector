@@ -39,11 +39,11 @@ class GameViewController: UIViewController, UIImagePickerControllerDelegate,UINa
             print("have a game")
             gameImageView.image=UIImage(data:game?.image as Data!)
             titleTextField.text=game!.title
-            addupdate.setTitle("Add", for: .normal)
+            addupdate.setTitle("Update", for: .normal)
         }else{
             print("not a game")
             deleteButton.isHidden=true
-            addupdate.setTitle("Update", for: .normal)
+            addupdate.setTitle("Add", for: .normal)
         }
     }
 
@@ -53,6 +53,8 @@ class GameViewController: UIViewController, UIImagePickerControllerDelegate,UINa
     }
 
     @IBAction func cameraTap(_ sender: Any) {
+        imagePicker.sourceType = .camera
+        present(imagePicker, animated: false, completion: nil)
     }
     //get image from picker controller select event
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
@@ -91,6 +93,17 @@ class GameViewController: UIViewController, UIImagePickerControllerDelegate,UINa
         navigationController!.popViewController(animated: true)
         
     }
+    
+    @IBAction func deleteTap(_ sender: Any) {
+        let context=(UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+        context.delete(game!)
+        
+        //guardar en la db/actualizar el contexto de la db
+        (UIApplication.shared.delegate as! AppDelegate).saveContext()
+        
+        navigationController!.popViewController(animated: true)
+    }
+    
     
 
 }
